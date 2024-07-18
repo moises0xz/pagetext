@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Ejemplo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos para la página de ejemplo */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+form {
+    display: flex;
+    align-items: center;
+}
+
+form input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+form button {
+    padding: 8px 15px;
+    font-size: 16px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+main {
+    padding: 20px;
+}
+
+.intro {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.images {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.images img {
+    width: 30%;
+    height: auto;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product {
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.product img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.product h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.product .price {
+    font-size: 14px;
+    color: #666;
+}
+
+.search-active .intro,
+.search-active .images {
+    display: none;
+}
+
+/* Estilos para el footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+        </style>
+</head>
+<body>
+    <header>
+        <h1>Mi Página de Ejemplo</h1>
+        <form id="searchForm">
+            <input type="text" id="searchInput" placeholder="Buscar productos...">
+            <button type="submit">Buscar</button>
+        </form>
+    </header>
+
+    <main id="mainContent">
+        <section class="intro">
+            <h2>Bienvenido a nuestra tienda</h2>
+            <p>Aquí encontrarás una selección de productos increíbles.</p>
+            <div class="images">
+                <img src="https://via.placeholder.com/300" alt="Imagen 1">
+                <img src="https://via.placeholder.com/300" alt="Imagen 2">
+                <img src="https://via.placeholder.com/300" alt="Imagen 3">
+            </div>
+        </section>
+
+        <section id="products" class="products">
+            <!-- Aquí se mostrarán los productos después de una búsqueda -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Tu Empresa. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Código JavaScript para filtrar productos al buscar
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const mainContent = document.getElementById('mainContent');
+        const productsSection = document.getElementById('products');
+        let products = [];
+
+        // Evento para manejar la búsqueda
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar que se recargue la página al enviar el formulario
+            const query = searchInput.value.trim().toLowerCase();
+
+            // Ocultar el contenido inicial y mostrar resultados de búsqueda
+            mainContent.classList.add('search-active');
+            showProducts(query);
+
+            // Actualizar la URL y agregar un nuevo estado al historial
+            const newUrl = `${window.location.pathname}?search=${query}`;
+            history.pushState({ query }, '', newUrl);
+        });
+
+        // Función para mostrar productos según la búsqueda
+        function showProducts(query) {
+            // Simulación de búsqueda de productos (aquí podrías usar datos reales)
+            products = [
+                { name: 'Auriculares Bluetooth', image: 'https://m.media-amazon.com/images/I/71yzAE39cxL._AC_UY218_.jpg', price: '$49.99' },
+                { name: 'Auriculares Inalámbricos', image: 'https://via.placeholder.com/150x100', price: '$79.99' },
+                { name: 'Auriculares con Cancelación de Ruido', image: 'https://via.placeholder.com/150x100', price: '$129.99' },
+                // Añade más productos según sea necesario
+            ];
+
+            // Mostrar los productos que coincidan con la búsqueda
+            let resultsHtml = '';
+            products.forEach(product => {
+                if (product.name.toLowerCase().includes(query)) {
+                    resultsHtml += `<div class="product">
+                                        <img src="${product.image}" alt="${product.name}">
+                                        <h3>${product.name}</h3>
+                                        <p class="price">${product.price}</p>
+                                    </div>`;
+                }
+            });
+
+            // Mostrar resultados o mensaje de no encontrados
+            if (resultsHtml !== '') {
+                productsSection.innerHTML = resultsHtml;
+            } else {
+                productsSection.innerHTML = '<p>No se encontraron resultados.</p>';
+            }
+        }
+
+        // Evento para manejar el retroceso/avance del navegador
+        window.onpopstate = function(event) {
+            if (event.state && event.state.query) {
+                const query = event.state.query;
+                searchInput.value = query;
+                showProducts(query);
+            } else {
+                mainContent.classList.remove('search-active');
+                productsSection.innerHTML = '';
+            }
+        };
+
+        // Verificar si la URL actual tiene una consulta de búsqueda al cargar la página
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('search');
+            if (query) {
+                searchInput.value = query;
+                mainContent.classList.add('search-active');
+                showProducts(query);
+            }
+        };
+    </script>
+</body>
+</html>
